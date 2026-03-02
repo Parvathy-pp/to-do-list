@@ -3,6 +3,7 @@ const completedList = document.getElementById("completedList");
 const inputField = document.getElementById("todoInput");
 const categoryInput = document.getElementById("categoryInput");
 const priorityInput = document.getElementById("priorityInput");
+const dueDateInput = document.getElementById("dueDateInput");
 
 // Save all tasks to localStorage
 function saveTasks() {
@@ -11,7 +12,9 @@ function saveTasks() {
         activeTasks.push({
             text: li.querySelector('.todo-text').innerText,
             category: li.dataset.category,
-            priority: li.dataset.priority
+            priority: li.dataset.priority,
+            dueDate: li.dataset.duedate
+
         });
     });
 
@@ -20,7 +23,9 @@ function saveTasks() {
         completedTasks.push({
             text: li.querySelector('.todo-text').innerText,
             category: li.dataset.category,
-            priority: li.dataset.priority
+            priority: li.dataset.priority,
+            dueDate: li.dataset.duedate
+
         });
     });
 
@@ -34,16 +39,26 @@ function loadTasks() {
     const completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
 
     activeTasks.forEach(task => {
-        const newItem = createTodoItem(task.text, task.category, task.priority);
-        list.appendChild(newItem);
-    });
+    const newItem = createTodoItem(
+        task.text,
+        task.category,
+        task.priority,
+        task.dueDate
+    );
+    list.appendChild(newItem);
+});
 
-    completedTasks.forEach(task => {
-        const newItem = createTodoItem(task.text, task.category, task.priority);
-        newItem.querySelector('input[type="checkbox"]').checked = true;
-        newItem.classList.add('completed');
-        completedList.appendChild(newItem);
-    });
+completedTasks.forEach(task => {
+    const newItem = createTodoItem(
+        task.text,
+        task.category,
+        task.priority,
+        task.dueDate
+    );
+    newItem.querySelector('input[type="checkbox"]').checked = true;
+    newItem.classList.add('completed');
+    completedList.appendChild(newItem);
+});
 }
 
 // Helper to close control panels
@@ -54,11 +69,12 @@ function closeAllControls() {
 }
 
 // Create Todo Item
-function createTodoItem(taskText, category = 'Personal', priority = 'Low') {
+function createTodoItem(taskText, category = 'Personal', priority = 'Low',dueDate = '') {
     let li = document.createElement("li");
     li.classList.add("todo-item");
     li.dataset.category = category;
     li.dataset.priority = priority;
+    li.dataset.duedate = dueDate;
 
     // Checkbox
     let checkbox = document.createElement("input");
@@ -93,6 +109,13 @@ function createTodoItem(taskText, category = 'Personal', priority = 'Low') {
 
     infoDiv.appendChild(catBadge);
     infoDiv.appendChild(priBadge);
+    if(dueDate){
+    let dueBadge = document.createElement("span");
+    dueBadge.className = "badge";
+    dueBadge.style.backgroundColor = "#3f51b5";
+    dueBadge.innerText = "Due: " + dueDate;
+    infoDiv.appendChild(dueBadge);
+}
 
     // Delete Button (VISIBLE ALWAYS)
     let deleteBtn = document.createElement("span");
@@ -129,7 +152,9 @@ document.getElementById("addBtn").addEventListener("click", function () {
     let category = categoryInput.value;
     let priority = priorityInput.value;
 
-    let newItem = createTodoItem(task, category, priority);
+    let dueDate = dueDateInput.value;
+
+let newItem = createTodoItem(task, category, priority, dueDate);
     list.appendChild(newItem);
 
     inputField.value = "";
